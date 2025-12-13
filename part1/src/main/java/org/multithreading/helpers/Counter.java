@@ -13,4 +13,10 @@ public class Counter {
 //        } // This will run synchronously.
         this.count++; // This will run concurrently
     }
+
+//    public synchronized void setCount() {
+//        this.count++; // This section is called critical section. Because this section is
+    // shared by multiple objects.
+//    }
+
 }
