@@ -40,10 +40,18 @@ public class Main {
 //        System.out.println("Counter: " + counter.getCount());
 
         Runnable scbBank = new SCBBank();
+        Runnable dutchBanglaBank = new DutchBanglaBank();
+
         Thread scbBankThread1 = new Thread(scbBank, "SCB-BANK-Customer1");
         Thread scbBankThread2 = new Thread(scbBank, "SCB-BANK-Customer2");
 
+        Thread dutchBanglaThread1 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer1");
+        Thread dutchBanglaThread2 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer2");
+
         scbBankThread1.start();
         scbBankThread2.start();
+
+        dutchBanglaThread1.start();
+        dutchBanglaThread2.start();
     }
 }
