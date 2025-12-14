@@ -19,10 +19,11 @@ public class DutchBanglaBank implements Banks, Runnable {
         boolean isLockAcquired = false;
 
         try {
-            // ⏳ wait max 3 seconds to get the lock
+
             System.out.println(Thread.currentThread().getName()
                     + " trying to get the lock.");
-            isLockAcquired = lock.tryLock(6, TimeUnit.SECONDS);
+            int anotherThreadWaitingTime = 6;
+            isLockAcquired = lock.tryLock(anotherThreadWaitingTime, TimeUnit.SECONDS); // ⏳ wait max `anotherThreadWaitingTime` seconds to get the lock
 
             if (isLockAcquired) {
                 if (this.balance >= amount) {
