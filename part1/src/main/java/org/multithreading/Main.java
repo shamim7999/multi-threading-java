@@ -4,12 +4,15 @@ package org.multithreading;
 import org.multithreading.helpers.Counter;
 import org.multithreading.interfaces.Banks;
 import org.multithreading.locks.DutchBanglaBank;
+import org.multithreading.locks.readwritelocks.ReadWriteLockExample;
+import org.multithreading.locks.readwritelocks.ReaderTask;
+import org.multithreading.locks.readwritelocks.WriterTask;
 import org.multithreading.synchronizes.SCBBank;
 import org.multithreading.threads.ThreadA;
 import org.multithreading.threads.ThreadC;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 //        ThreadA threadA = new ThreadA();
 //        Thread th1 = new Thread(threadA, "Chrome");
 //        Thread th2 = new Thread(threadA, "Firefox");
@@ -39,19 +42,38 @@ public class Main {
 //
 //        System.out.println("Counter: " + counter.getCount());
 
-        Runnable scbBank = new SCBBank();
-        Runnable dutchBanglaBank = new DutchBanglaBank();
+//        Runnable scbBank = new SCBBank();
+//        Runnable dutchBanglaBank = new DutchBanglaBank();
+//
+//        Thread scbBankThread1 = new Thread(scbBank, "SCB-BANK-Customer1");
+//        Thread scbBankThread2 = new Thread(scbBank, "SCB-BANK-Customer2");
+//
+//        Thread dutchBanglaThread1 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer1");
+//        Thread dutchBanglaThread2 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer2");
+//
+//        scbBankThread1.start();
+//        scbBankThread2.start();
+//
+//        dutchBanglaThread1.start();
+//        dutchBanglaThread2.start();
 
-        Thread scbBankThread1 = new Thread(scbBank, "SCB-BANK-Customer1");
-        Thread scbBankThread2 = new Thread(scbBank, "SCB-BANK-Customer2");
 
-        Thread dutchBanglaThread1 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer1");
-        Thread dutchBanglaThread2 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer2");
+        ReadWriteLockExample readWriteLockExample = new ReadWriteLockExample();
+        Runnable writer = new WriterTask(readWriteLockExample);
+        Runnable reader = new ReaderTask(readWriteLockExample);
 
-        scbBankThread1.start();
-        scbBankThread2.start();
+        Thread writerThread = new Thread(writer, "WRITER");
+        Thread shamim = new Thread(reader, "SHAMIM");
+        Thread imon = new Thread(reader, "IMON");
 
-        dutchBanglaThread1.start();
-        dutchBanglaThread2.start();
+
+        shamim.start();
+        imon.start();
+        writerThread.start();
+
+
+        writerThread.join();
+        shamim.join();
+        imon.join();
     }
 }
