@@ -6,6 +6,7 @@ import org.multithreading.deadlock.Pen;
 import org.multithreading.helpers.Counter;
 import org.multithreading.interfaces.Banks;
 import org.multithreading.locks.DutchBanglaBank;
+import org.multithreading.miscellaneous.Factorial;
 import org.multithreading.synchronizes.SCBBank;
 import org.multithreading.threadcommunication.Consumer;
 import org.multithreading.threadcommunication.Producer;
@@ -14,6 +15,7 @@ import org.multithreading.threads.ThreadA;
 import org.multithreading.threads.ThreadC;
 
 import java.sql.ShardingKey;
+import java.sql.Time;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
@@ -95,5 +97,53 @@ public class Main {
         consumerThread.start();
         producerThread.start();
 
+        consumerThread.join();
+        producerThread.join();
+
+        System.out.println("FACTORIAL CALCULATION USING THREADS\n\n");
+
+
+
+
+        long startTime = System.currentTimeMillis();
+
+        Thread [] threads = new Thread[10];
+        Factorial factorial = new Factorial();
+        for(int i=1; i<=10; i++) {
+            final int finalI = i;
+            threads[finalI-1] = new Thread(() -> System.out.println("Factorial("+finalI+"): " + factorial.getFactorial(finalI)));
+            threads[finalI-1].start();
+        }
+        for(Thread thread : threads) {
+            thread.join();
+        }
+
+
+
+        /**
+         * Example: Sequential Factorial Computation
+         *
+         * The following code computes factorials from 1 to 10 sequentially:
+         *
+         * <pre>
+         * // Factorial factorial = new Factorial();
+         * // for(int i = 1; i <= 10; i++) {
+         * //     System.out.println("Factorial(" + i + "): " + factorial.getFactorial(i));
+         * // }
+         * </pre>
+         *
+         * Explanation:
+         * - The loop calls `factorial.getFactorial(i)` one by one.
+         * - Inside `getFactorial()`, there is a `Thread.sleep(1000)` (1 second) to simulate delay.
+         * - Since the loop is sequential, each call to `getFactorial()` waits for 1 second before computing the factorial.
+         * - Therefore, computing factorials from 1 to 10 takes approximately 10 seconds in total (1 second per iteration).
+         *
+         * Note:
+         * - Unlike multi-threaded execution where threads can sleep in parallel, here each call blocks the main thread,
+         *   causing a cumulative delay.
+         */
+
+
+        System.out.println("Total Time taken: " + (System.currentTimeMillis() - startTime));
     }
 }
