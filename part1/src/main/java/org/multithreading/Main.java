@@ -1,6 +1,8 @@
 package org.multithreading;
 
 
+import org.multithreading.deadlock.Paper;
+import org.multithreading.deadlock.Pen;
 import org.multithreading.helpers.Counter;
 import org.multithreading.interfaces.Banks;
 import org.multithreading.locks.DutchBanglaBank;
@@ -9,7 +11,7 @@ import org.multithreading.threads.ThreadA;
 import org.multithreading.threads.ThreadC;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 //        ThreadA threadA = new ThreadA();
 //        Thread th1 = new Thread(threadA, "Chrome");
 //        Thread th2 = new Thread(threadA, "Firefox");
@@ -53,5 +55,29 @@ public class Main {
 
         dutchBanglaThread1.start();
         dutchBanglaThread2.start();
+
+        scbBankThread1.join();
+        scbBankThread2.join();
+        dutchBanglaThread1.join();
+        dutchBanglaThread2.join();
+
+        System.out.println("Starting DEADLOCK EXAMPLE\n\n");
+
+        Pen pen = new Pen();
+        Paper paper = new Paper();
+
+        pen.setPaper(paper);
+        paper.setPen(pen);
+
+        Thread penThread = new Thread((Runnable) pen, "PEN-THREAD");
+        Thread paperThread = new Thread((Runnable) paper, "PAPER-THREAD");
+
+        penThread.start();
+        paperThread.start();
+
+        penThread.join();
+        paperThread.join();
+
+
     }
 }
