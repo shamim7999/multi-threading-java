@@ -29,6 +29,7 @@ public class ReadWriteLockExample {
                     Thread.currentThread().getName() +
                             " acquired write lock, counter = " + counter
             );
+            Thread.sleep(5000);
         } finally {
             writeLock.unlock();
             System.out.println(
