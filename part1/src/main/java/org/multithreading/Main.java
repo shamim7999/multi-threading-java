@@ -7,8 +7,13 @@ import org.multithreading.helpers.Counter;
 import org.multithreading.interfaces.Banks;
 import org.multithreading.locks.DutchBanglaBank;
 import org.multithreading.synchronizes.SCBBank;
+import org.multithreading.threadcommunication.Consumer;
+import org.multithreading.threadcommunication.Producer;
+import org.multithreading.threadcommunication.SharedData;
 import org.multithreading.threads.ThreadA;
 import org.multithreading.threads.ThreadC;
+
+import java.sql.ShardingKey;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
@@ -78,6 +83,17 @@ public class Main {
         penThread.join();
         paperThread.join();
 
+        System.out.println("Starting THREAD COMMUNICATION EXAMPLE\n\n");
+
+        SharedData sharedData = new SharedData();
+        Runnable consumer = new Consumer(sharedData);
+        Runnable producer = new Producer(sharedData);
+
+        Thread consumerThread = new Thread(consumer);
+        Thread producerThread = new Thread(producer);
+
+        consumerThread.start();
+        producerThread.start();
 
     }
 }
