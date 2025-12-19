@@ -1,0 +1,15 @@
+🔒 Deadlock Explanation (Very Clear)
+
+PEN-THREAD
+
+Enters writeWithPen() → locks Pen
+
+Tries to call paper.finishWriting() → needs Paper
+
+PAPER-THREAD
+
+Enters writeWithPaper() → locks Paper
+
+Tries to call pen.finishWriting() → needs Pen
+
+➡️ Circular wait happens → DEADLOCK
