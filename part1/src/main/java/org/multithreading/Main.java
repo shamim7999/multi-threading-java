@@ -7,6 +7,8 @@ import org.multithreading.helpers.Counter;
 import org.multithreading.interfaces.Banks;
 import org.multithreading.locks.DutchBanglaBank;
 import org.multithreading.miscellaneous.Factorial;
+import org.multithreading.recorders.AudioRecorderTask;
+import org.multithreading.recorders.SimpleScreenshot;
 import org.multithreading.synchronizes.SCBBank;
 import org.multithreading.threadcommunication.Consumer;
 import org.multithreading.threadcommunication.Producer;
@@ -14,11 +16,12 @@ import org.multithreading.threadcommunication.SharedData;
 import org.multithreading.threads.ThreadA;
 import org.multithreading.threads.ThreadC;
 
+import java.io.IOException;
 import java.sql.ShardingKey;
 import java.sql.Time;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
 //        ThreadA threadA = new ThreadA();
 //        Thread th1 = new Thread(threadA, "Chrome");
 //        Thread th2 = new Thread(threadA, "Firefox");
@@ -48,75 +51,75 @@ public class Main {
 //
 //        System.out.println("Counter: " + counter.getCount());
 
-        Runnable scbBank = new SCBBank();
-        Runnable dutchBanglaBank = new DutchBanglaBank();
-
-        Thread scbBankThread1 = new Thread(scbBank, "SCB-BANK-Customer1");
-        Thread scbBankThread2 = new Thread(scbBank, "SCB-BANK-Customer2");
-
-        Thread dutchBanglaThread1 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer1");
-        Thread dutchBanglaThread2 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer2");
-
-        scbBankThread1.start();
-        scbBankThread2.start();
-
-        dutchBanglaThread1.start();
-        dutchBanglaThread2.start();
-
-        scbBankThread1.join();
-        scbBankThread2.join();
-        dutchBanglaThread1.join();
-        dutchBanglaThread2.join();
-
-        System.out.println("Starting DEADLOCK EXAMPLE\n\n");
-
-        Pen pen = new Pen();
-        Paper paper = new Paper();
-
-        pen.setPaper(paper);
-        paper.setPen(pen);
-
-        Thread penThread = new Thread((Runnable) pen, "PEN-THREAD");
-        Thread paperThread = new Thread((Runnable) paper, "PAPER-THREAD");
-
-        penThread.start();
-        paperThread.start();
-
-        penThread.join();
-        paperThread.join();
-
-        System.out.println("Starting THREAD COMMUNICATION EXAMPLE\n\n");
-
-        SharedData sharedData = new SharedData();
-        Runnable consumer = new Consumer(sharedData);
-        Runnable producer = new Producer(sharedData);
-
-        Thread consumerThread = new Thread(consumer);
-        Thread producerThread = new Thread(producer);
-
-        consumerThread.start();
-        producerThread.start();
-
-        consumerThread.join();
-        producerThread.join();
+//        Runnable scbBank = new SCBBank();
+//        Runnable dutchBanglaBank = new DutchBanglaBank();
+//
+//        Thread scbBankThread1 = new Thread(scbBank, "SCB-BANK-Customer1");
+//        Thread scbBankThread2 = new Thread(scbBank, "SCB-BANK-Customer2");
+//
+//        Thread dutchBanglaThread1 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer1");
+//        Thread dutchBanglaThread2 = new Thread(dutchBanglaBank, "DUTCHBANGLA-BANK-Customer2");
+//
+//        scbBankThread1.start();
+//        scbBankThread2.start();
+//
+//        dutchBanglaThread1.start();
+//        dutchBanglaThread2.start();
+//
+//        scbBankThread1.join();
+//        scbBankThread2.join();
+//        dutchBanglaThread1.join();
+//        dutchBanglaThread2.join();
+//
+//        System.out.println("Starting DEADLOCK EXAMPLE\n\n");
+//
+//        Pen pen = new Pen();
+//        Paper paper = new Paper();
+//
+//        pen.setPaper(paper);
+//        paper.setPen(pen);
+//
+//        Thread penThread = new Thread((Runnable) pen, "PEN-THREAD");
+//        Thread paperThread = new Thread((Runnable) paper, "PAPER-THREAD");
+//
+//        penThread.start();
+//        paperThread.start();
+//
+//        penThread.join();
+//        paperThread.join();
+//
+//        System.out.println("Starting THREAD COMMUNICATION EXAMPLE\n\n");
+//
+//        SharedData sharedData = new SharedData();
+//        Runnable consumer = new Consumer(sharedData);
+//        Runnable producer = new Producer(sharedData);
+//
+//        Thread consumerThread = new Thread(consumer);
+//        Thread producerThread = new Thread(producer);
+//
+//        consumerThread.start();
+//        producerThread.start();
+//
+//        consumerThread.join();
+//        producerThread.join();
 
         System.out.println("FACTORIAL CALCULATION USING THREADS\n\n");
 
 
 
 
-        long startTime = System.currentTimeMillis();
-
-        Thread [] threads = new Thread[10];
-        Factorial factorial = new Factorial();
-        for(int i=1; i<=10; i++) {
-            final int finalI = i;
-            threads[finalI-1] = new Thread(() -> System.out.println("Factorial("+finalI+"): " + factorial.getFactorial(finalI)));
-            threads[finalI-1].start();
-        }
-        for(Thread thread : threads) {
-            thread.join();
-        }
+//        long startTime = System.currentTimeMillis();
+//
+//        Thread [] threads = new Thread[10];
+//        Factorial factorial = new Factorial();
+//        for(int i=1; i<=10; i++) {
+//            final int finalI = i;
+//            threads[finalI-1] = new Thread(() -> System.out.println("Factorial("+finalI+"): " + factorial.getFactorial(finalI)));
+//            threads[finalI-1].start();
+//        }
+//        for(Thread thread : threads) {
+//            thread.join();
+//        }
 
 
 
@@ -144,6 +147,29 @@ public class Main {
          */
 
 
-        System.out.println("Total Time taken: " + (System.currentTimeMillis() - startTime));
+        //System.out.println("Total Time taken: " + (System.currentTimeMillis() - startTime));
+
+        System.out.println("Screenshot taking program is executing");
+
+        Thread screenShotThread = new Thread(new SimpleScreenshot());
+
+
+        screenShotThread.start();
+
+        AudioRecorderTask recorder =
+                new AudioRecorderTask();
+
+        Thread recordingThread =
+                new Thread(recorder, "AudioRecorderThread");
+
+        recordingThread.start();
+
+        System.out.println("Press ENTER to stop recording...");
+        System.in.read();
+
+        recorder.stopRecording();
+
+
+
     }
 }
