@@ -8,6 +8,7 @@ import org.multithreading.interfaces.Banks;
 import org.multithreading.locks.DutchBanglaBank;
 import org.multithreading.miscellaneous.Circle;
 import org.multithreading.miscellaneous.Factorial;
+import org.multithreading.miscellaneous.Square;
 import org.multithreading.synchronizes.SCBBank;
 import org.multithreading.threadcommunication.Consumer;
 import org.multithreading.threadcommunication.Producer;
@@ -110,10 +111,11 @@ public class Main {
         long startTime = System.currentTimeMillis();
 
         Thread[] threads = new Thread[10];
-        Factorial factorial = new Factorial();
         for (int i = 1; i <= 10; i++) {
             final int finalI = i;
-            threads[finalI - 1] = new Thread(() -> System.out.println("Factorial(" + finalI + "): " + factorial.getFactorial(finalI)));
+            threads[finalI - 1] = new Thread(() -> {
+                System.out.println("Factorial(" + finalI + "): " + new Factorial().getFactorial(finalI));
+            });
             threads[finalI - 1].start();
         }
         for (Thread thread : threads) {
@@ -154,7 +156,9 @@ public class Main {
         try {
             for (int i = 1; i <= 10; i++) {
                 final int finalI = i;
-                executorService.submit(() -> System.out.println("Factorial(" + finalI + "): " + factorial.getFactorial(finalI)));
+                executorService.submit(() -> {
+                    System.out.println("Factorial(" + finalI + "): " + new Factorial().getFactorial(finalI));
+                });
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -163,16 +167,16 @@ public class Main {
         executorService.awaitTermination(10, TimeUnit.SECONDS);
         System.out.println("Total Time taken by executor service: " + (System.currentTimeMillis() - startTime) + "ms");
 
+
         System.out.println("Now, evaluating area of circles using callable interface...");
         startTime = System.currentTimeMillis();
-        ExecutorService callableService = Executors.newFixedThreadPool(5);
+        ExecutorService callableService = Executors.newFixedThreadPool(3);
 
         List<Future<Double>> futures = new ArrayList<>();
 
         for (int i = 1; i <= 10; i++) {
             futures.add(callableService.submit(new Circle((double) i)));
         }
-
         for (int i = 1; i <= 10; i++) {
             try {
                 System.out.println("Area of Circle with radius " + i + " is: " + futures.get(i - 1).get());
@@ -182,6 +186,35 @@ public class Main {
         }
         callableService.shutdown();
         callableService.awaitTermination(10, TimeUnit.SECONDS);
+        System.out.println("Total Time taken by callable interface: " + (System.currentTimeMillis() - startTime) + "ms");
+
+
+        System.out.println("Now, evaluating area of squares using invokeAll()...");
+        startTime = System.currentTimeMillis();
+        ExecutorService executorService2 = Executors.newFixedThreadPool(3);
+        Square square = new Square();
+        List<Callable<Double>> squareCallbles = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            final Double finalSide = (double) i;
+            Square sq = new Square();
+            sq.setSide(finalSide);
+            squareCallbles.add(() -> sq.area());
+        }
+        List<Future<Double>> squareAreas = executorService2.invokeAll(squareCallbles);
+
+        int side = 1;
+
+        for (Future<Double> squareArea : squareAreas) {
+            try {
+                System.out.println("Area of Square with side " + side++ + " is: " + squareArea.get());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        executorService2.shutdown();
+        executorService2.awaitTermination(10, TimeUnit.SECONDS);
+
         System.out.println("Total Time taken by callable interface: " + (System.currentTimeMillis() - startTime) + "ms");
 
     }
