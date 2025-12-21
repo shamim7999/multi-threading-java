@@ -6,6 +6,7 @@ import org.multithreading.deadlock.Pen;
 import org.multithreading.helpers.Counter;
 import org.multithreading.interfaces.Banks;
 import org.multithreading.locks.DutchBanglaBank;
+import org.multithreading.miscellaneous.Circle;
 import org.multithreading.miscellaneous.Factorial;
 import org.multithreading.synchronizes.SCBBank;
 import org.multithreading.threadcommunication.Consumer;
@@ -16,9 +17,9 @@ import org.multithreading.threads.ThreadC;
 
 import java.sql.ShardingKey;
 import java.sql.Time;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
@@ -161,6 +162,27 @@ public class Main {
         executorService.shutdown();
         executorService.awaitTermination(10, TimeUnit.SECONDS);
         System.out.println("Total Time taken by executor service: " + (System.currentTimeMillis() - startTime) + "ms");
+
+        System.out.println("Now, evaluating area of circles using callable interface...");
+        startTime = System.currentTimeMillis();
+        ExecutorService callableService = Executors.newFixedThreadPool(5);
+
+        List<Future<Double>> futures = new ArrayList<>();
+
+        for (int i = 1; i <= 10; i++) {
+            futures.add(callableService.submit(new Circle((double) i)));
+        }
+
+        for (int i = 1; i <= 10; i++) {
+            try {
+                System.out.println("Area of Circle with radius " + i + " is: " + futures.get(i - 1).get());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        callableService.shutdown();
+        callableService.awaitTermination(10, TimeUnit.SECONDS);
+        System.out.println("Total Time taken by callable interface: " + (System.currentTimeMillis() - startTime) + "ms");
 
     }
 }
