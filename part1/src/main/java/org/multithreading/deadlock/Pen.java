@@ -10,7 +10,10 @@ public class Pen implements Runnable {
 
     @Override
     public void run() {
-        writeWithPen(); // add this line inside `synchronized(paper) {}` block to resolve deadlock
+         // add this line inside `synchronized(paper) {}` block to resolve deadlock
+        synchronized (paper) {
+            writeWithPen();
+        }
     }
 
     public synchronized void writeWithPen() {
