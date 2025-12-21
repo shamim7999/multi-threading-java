@@ -192,7 +192,6 @@ public class Main {
         System.out.println("Now, evaluating area of squares using invokeAll()...");
         startTime = System.currentTimeMillis();
         ExecutorService executorService2 = Executors.newFixedThreadPool(3);
-        Square square = new Square();
         List<Callable<Double>> squareCallbles = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             final Double finalSide = (double) i;
