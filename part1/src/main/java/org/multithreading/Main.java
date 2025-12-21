@@ -16,6 +16,9 @@ import org.multithreading.threads.ThreadC;
 
 import java.sql.ShardingKey;
 import java.sql.Time;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
@@ -103,21 +106,18 @@ public class Main {
         System.out.println("FACTORIAL CALCULATION USING THREADS\n\n");
 
 
-
-
         long startTime = System.currentTimeMillis();
 
-        Thread [] threads = new Thread[10];
+        Thread[] threads = new Thread[10];
         Factorial factorial = new Factorial();
-        for(int i=1; i<=10; i++) {
+        for (int i = 1; i <= 10; i++) {
             final int finalI = i;
-            threads[finalI-1] = new Thread(() -> System.out.println("Factorial("+finalI+"): " + factorial.getFactorial(finalI)));
-            threads[finalI-1].start();
+            threads[finalI - 1] = new Thread(() -> System.out.println("Factorial(" + finalI + "): " + factorial.getFactorial(finalI)));
+            threads[finalI - 1].start();
         }
-        for(Thread thread : threads) {
+        for (Thread thread : threads) {
             thread.join();
         }
-
 
 
         /**
@@ -144,6 +144,23 @@ public class Main {
          */
 
 
-        System.out.println("Total Time taken: " + (System.currentTimeMillis() - startTime));
+        System.out.println("Total Time taken: " + (System.currentTimeMillis() - startTime) + "ms");
+
+        System.out.println("Doing Factorial evaluation using EXECUTOR FRAMEWORK...");
+        startTime = System.currentTimeMillis();
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+
+        try {
+            for (int i = 1; i <= 10; i++) {
+                final int finalI = i;
+                executorService.submit(() -> System.out.println("Factorial(" + finalI + "): " + factorial.getFactorial(finalI)));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        executorService.shutdown();
+        executorService.awaitTermination(10, TimeUnit.SECONDS);
+        System.out.println("Total Time taken by executor service: " + (System.currentTimeMillis() - startTime) + "ms");
+
     }
 }
