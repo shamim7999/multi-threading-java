@@ -161,7 +161,7 @@ public class Main {
                 });
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
         }
         executorService.shutdown();
         executorService.awaitTermination(10, TimeUnit.SECONDS);
@@ -191,7 +191,7 @@ public class Main {
 
         System.out.println("Now, evaluating area of squares using invokeAll()...");
         startTime = System.currentTimeMillis();
-        ExecutorService executorService2 = Executors.newFixedThreadPool(3);
+        ExecutorService executorService2 = Executors.newFixedThreadPool(10);
         List<Callable<Double>> squareCallbles = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             final Double finalSide = (double) i;
@@ -207,7 +207,7 @@ public class Main {
             try {
                 System.out.println("Area of Square with side " + side++ + " is: " + squareArea.get());
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
 
@@ -215,6 +215,38 @@ public class Main {
         executorService2.awaitTermination(10, TimeUnit.SECONDS);
 
         System.out.println("Total Time taken by callable interface: " + (System.currentTimeMillis() - startTime) + "ms");
+
+
+
+        System.out.println("Now, evaluating area of squares with ExecutorCompletionService using invokeAll()...");
+        startTime = System.currentTimeMillis();
+        ExecutorService executorService3 = Executors.newFixedThreadPool(10);
+        ExecutorCompletionService<Double> executorCompletionService = new ExecutorCompletionService<>(executorService3);
+        List<Future<Double>> resultsByExecutorCompletionService = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            final Double finalSide = (double) i;
+            Square sq = new Square();
+            sq.setSide(finalSide);
+            executorCompletionService.submit(() -> sq.area());
+        }
+        // collect results as they complete
+        for (int i = 0; i < 10; i++) {
+            try {
+                Future<Double> future = executorCompletionService.take(); // blocks until ANY completes
+                Double area = future.get();
+                System.out.println("Area of Square with side " + Math.sqrt(area) + " is: " + area);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+
+        executorService2.shutdown();
+        executorService2.awaitTermination(10, TimeUnit.SECONDS);
+
+        System.out.println("Total Time taken by callable interface: " + (System.currentTimeMillis() - startTime) + "ms");
+
+
 
     }
 }
