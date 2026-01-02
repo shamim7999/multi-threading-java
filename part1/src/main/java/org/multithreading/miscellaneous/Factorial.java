@@ -1,6 +1,7 @@
 package org.multithreading.miscellaneous;
 
 public class Factorial {
+
     private long fact;
     private int n;
 
