@@ -222,7 +222,6 @@ public class Main {
         startTime = System.currentTimeMillis();
         ExecutorService executorService3 = Executors.newFixedThreadPool(10);
         ExecutorCompletionService<Double> executorCompletionService = new ExecutorCompletionService<>(executorService3);
-        List<Future<Double>> resultsByExecutorCompletionService = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             final Double finalSide = (double) i;
             Square sq = new Square();
