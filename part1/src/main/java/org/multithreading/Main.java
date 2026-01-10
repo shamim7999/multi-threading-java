@@ -8,6 +8,7 @@ import org.multithreading.interfaces.Banks;
 import org.multithreading.locks.DutchBanglaBank;
 import org.multithreading.miscellaneous.Circle;
 import org.multithreading.miscellaneous.Factorial;
+import org.multithreading.miscellaneous.Printer;
 import org.multithreading.miscellaneous.Square;
 import org.multithreading.synchronizes.SCBBank;
 import org.multithreading.threadcommunication.Consumer;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
 //        ThreadA threadA = new ThreadA();
 //        Thread th1 = new Thread(threadA, "Chrome");
 //        Thread th2 = new Thread(threadA, "Firefox");
@@ -161,7 +162,7 @@ public class Main {
                 });
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println(ex.getMessage());
         }
         executorService.shutdown();
         executorService.awaitTermination(10, TimeUnit.SECONDS);
@@ -191,7 +192,7 @@ public class Main {
 
         System.out.println("Now, evaluating area of squares using invokeAll()...");
         startTime = System.currentTimeMillis();
-        ExecutorService executorService2 = Executors.newFixedThreadPool(3);
+        ExecutorService executorService2 = Executors.newFixedThreadPool(10);
         List<Callable<Double>> squareCallbles = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             final Double finalSide = (double) i;
@@ -207,7 +208,7 @@ public class Main {
             try {
                 System.out.println("Area of Square with side " + side++ + " is: " + squareArea.get());
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
 
@@ -216,5 +217,50 @@ public class Main {
 
         System.out.println("Total Time taken by callable interface: " + (System.currentTimeMillis() - startTime) + "ms");
 
+
+
+        System.out.println("Now, evaluating area of squares with ExecutorCompletionService using invokeAll()...");
+        startTime = System.currentTimeMillis();
+        ExecutorService executorService3 = Executors.newFixedThreadPool(10);
+        ExecutorCompletionService<Double> executorCompletionService = new ExecutorCompletionService<>(executorService3);
+        for (int i = 1; i <= 10; i++) {
+            final Double finalSide = (double) i;
+            Square sq = new Square();
+            sq.setSide(finalSide);
+            executorCompletionService.submit(() -> sq.area());
+        }
+        // collect results as they complete
+        for (int i = 0; i < 10; i++) {
+            try {
+                Future<Double> future = executorCompletionService.take(); // blocks until ANY completes
+                Double area = future.get();
+                System.out.println("Area of Square with side " + Math.sqrt(area) + " is: " + area);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+
+        executorService2.shutdown();
+        executorService2.awaitTermination(10, TimeUnit.SECONDS);
+
+        System.out.println("Total Time taken by callable interface: " + (System.currentTimeMillis() - startTime) + "ms");
+
+        System.out.println("Count Down Latch Example with Executor Service");
+
+        int numberOfTasks = 3;
+        ExecutorService executorService4 = Executors.newFixedThreadPool(numberOfTasks);
+        CountDownLatch countDownLatch1 = new CountDownLatch(numberOfTasks);
+        List<Callable<String>> printerThreads = new ArrayList<>();
+        printerThreads.add(new Printer(countDownLatch1));
+        printerThreads.add(new Printer(countDownLatch1));
+        printerThreads.add(new Printer(countDownLatch1));
+        List<Future<String>> threadNames = executorService4.invokeAll(printerThreads);
+        for(Future<String> threadName : threadNames) {
+            System.out.println("Thread Name: " + threadName.get());
+        }
+        countDownLatch1.await();
+
+        System.out.println("Count Down Latch Example completed.");
     }
 }
