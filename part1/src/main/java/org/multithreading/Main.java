@@ -6,10 +6,7 @@ import org.multithreading.deadlock.Pen;
 import org.multithreading.helpers.Counter;
 import org.multithreading.interfaces.Banks;
 import org.multithreading.locks.DutchBanglaBank;
-import org.multithreading.miscellaneous.Circle;
-import org.multithreading.miscellaneous.Factorial;
-import org.multithreading.miscellaneous.Printer;
-import org.multithreading.miscellaneous.Square;
+import org.multithreading.miscellaneous.*;
 import org.multithreading.synchronizes.SCBBank;
 import org.multithreading.threadcommunication.Consumer;
 import org.multithreading.threadcommunication.Producer;
@@ -241,8 +238,8 @@ public class Main {
         }
 
 
-        executorService2.shutdown();
-        executorService2.awaitTermination(10, TimeUnit.SECONDS);
+        executorService3.shutdown();
+        executorService3.awaitTermination(10, TimeUnit.SECONDS);
 
         System.out.println("Total Time taken by callable interface: " + (System.currentTimeMillis() - startTime) + "ms");
 
@@ -260,7 +257,48 @@ public class Main {
             System.out.println("Thread Name: " + threadName.get());
         }
         countDownLatch1.await();
-
+        executorService4.shutdown();
+        executorService4.awaitTermination(10, TimeUnit.SECONDS);
         System.out.println("Count Down Latch Example completed.");
+
+        System.out.println("Matrix Multiplication by - Cyclic Barrier ");
+
+        double[][] A = {
+                {1, 2, 3},
+                {4, 5, 6},
+                {7, 8, 9},
+                {10,11,12}
+        };
+
+        double[][] B = {
+                {1,  2,  3,  4},
+                {5,  6,  7,  8},
+                {9, 10, 11, 12}
+        };
+
+        double[][] C = new double[4][4];
+
+        int numThreads = 2;
+        CyclicBarrier barrier = new CyclicBarrier(numThreads,
+                () -> System.out.println("[Barrier] Phase completed."));
+
+        Thread t1 = new Thread(new MatrixMultiply(A, B, C, 0, 2, barrier));
+        Thread t2 = new Thread(new MatrixMultiply(A, B, C, 2, 4, barrier));
+
+        t1.start();
+        t2.start();
+
+        t1.join();
+        t2.join();
+
+        System.out.println("\nResult matrix C:");
+        for (double[] row : C) {
+            for (double v : row) {
+                System.out.printf("%5.0f", v);
+            }
+            System.out.println();
+        }
+
+        System.out.println("Cycle Barrier example finished");
     }
 }
